@@ -1,0 +1,6 @@
+{
+  "name": "imageresize.store — Online Image Tools & Compressor to 50KB",
+  "description": "Free online image resizer, image compressor to 20KB/50KB/100KB, background remover, JPG to PDF converter, passport photo maker, WhatsApp DP resizer, and HEIC to JPG converter.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
