@@ -1,0 +1,4 @@
+# Configuration for Firebase App Hosting
+runConfig:
+  environmentVariables:
+    NODE_ENV: "production"
