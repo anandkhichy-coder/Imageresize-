@@ -1,9 +1,5 @@
 import express from 'express';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
@@ -21,7 +17,7 @@ async function startServer() {
   });
 
   if (process.env.NODE_ENV !== 'production') {
-    // Development mode with dynamic Vite middleware (keeps production bundle clean)
+    // Development mode with dynamic Vite middleware
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true, host: '0.0.0.0', port: PORT },
@@ -43,4 +39,5 @@ async function startServer() {
 }
 
 startServer();
+
 
