@@ -9,12 +9,16 @@ const __dirname = path.dirname(__filename);
 async function startServer() {
   const app = express();
   
-  // App Hosting / Cloud Run injects PORT (e.g. 8080), fallback to 3000 for AI Studio environment
+  // App Hosting / Cloud Run injects PORT (e.g. 8080), fallback to 3000 for local dev
   const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
-  // Health check endpoint for Cloud Run / App Hosting
+  // Cloud Run / Firebase App Hosting Health Check Endpoints
+  app.get('/healthz', (req, res) => {
+    res.status(200).send('OK');
+  });
+
   app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
   if (process.env.NODE_ENV !== 'production') {
@@ -34,8 +38,9 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server listening on http://0.0.0.0:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
   });
 }
 
 startServer();
+
