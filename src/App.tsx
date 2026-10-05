@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { HomePage } from './components/HomePage';
 import { ToolPageWrapper } from './components/ToolPageWrapper';
@@ -16,85 +16,91 @@ import { BulkImageCompressor } from './components/BulkImageCompressor';
 import { BlogHub } from './components/BlogHub';
 import { BlogPostView } from './components/BlogPostView';
 import { ToolsDirectory } from './components/ToolsDirectory';
+import { LegalPages } from './components/LegalPages';
 import { Footer } from './components/Footer';
 import { ToolId, PageView } from './types';
 import { TOOLS_LIST } from './data/toolsData';
 import { getBlogPostById } from './data/blogs';
+import {
+  parseCurrentRoute,
+  syncBrowserUrl,
+  updatePageSeo,
+} from './utils/seoRouting';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<PageView>('home');
-  const [activeTool, setActiveTool] = useState<ToolId>('compressor');
-  const [selectedBlogPostId, setSelectedBlogPostId] = useState<number>(1);
+  // Initialize state based on the current window.location.pathname
+  const [currentView, setCurrentView] = useState<PageView>(() => {
+    const route = parseCurrentRoute();
+    return route.currentView;
+  });
 
-  // Dynamically update document title and meta description based on current view and active content
+  const [activeTool, setActiveTool] = useState<ToolId>(() => {
+    const route = parseCurrentRoute();
+    return route.activeTool || 'compressor';
+  });
+
+  const [selectedBlogPostId, setSelectedBlogPostId] = useState<number>(() => {
+    const route = parseCurrentRoute();
+    return route.selectedBlogPostId || 1;
+  });
+
+  // Master SEO and document update effect
   useEffect(() => {
-    if (currentView === 'home') {
-      document.title = 'imageresize.store — Free 50KB Image Compressor, Resizer & BG Remover';
-      const metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) {
-        metaDesc.setAttribute('content', 'Compress images to 50KB & 20KB for Indian exam forms, passport photo maker 35x45mm, WhatsApp DP resizer without crop, and AI background remover. 100% client-side.');
-      }
-    } else if (currentView === 'blog-hub') {
-      document.title = '100 Free Image Editing Guides & Masterclasses | imageresize.store';
-      const metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) {
-        metaDesc.setAttribute('content', 'Explore 100 step-by-step tutorials and masterclasses for image compression to 50KB, Aadhaar resizing, WhatsApp DP without crop, passport photos, and background removal.');
-      }
-    } else if (currentView === 'blog-post') {
-      const post = getBlogPostById(selectedBlogPostId);
-      if (post) {
-        document.title = `${post.title} | imageresize.store`;
-        const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc) {
-          metaDesc.setAttribute('content', post.excerpt);
-        }
-      }
-    } else if (currentView === 'all-tools') {
-      document.title = 'All Free Online Image Tools Directory | imageresize.store';
-      const metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) {
-        metaDesc.setAttribute('content', 'Browse all 12 free in-browser image tools: 50KB Compressor, AI Background Remover, JPG to PDF, Passport Photo Maker, and HEIC to JPG.');
-      }
-    } else {
-      // Individual Dedicated Tool View
-      const meta = TOOLS_LIST.find((t) => t.id === activeTool) || TOOLS_LIST[0];
-      if (meta) {
-        document.title = `${meta.seoTitle} | imageresize.store`;
-        const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc) {
-          metaDesc.setAttribute('content', meta.seoDescription);
-        }
-      }
-    }
+    updatePageSeo(currentView, activeTool, selectedBlogPostId);
   }, [currentView, activeTool, selectedBlogPostId]);
 
-  // Navigation actions
-  const handleNavigateHome = () => {
-    setCurrentView('home');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  // Handle browser Back / Forward history buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const route = parseCurrentRoute();
+      setCurrentView(route.currentView);
+      if (route.activeTool) setActiveTool(route.activeTool);
+      if (route.selectedBlogPostId) setSelectedBlogPostId(route.selectedBlogPostId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
-  const handleSelectTool = (id: ToolId) => {
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Navigation actions with automatic URL syncing and smooth scroll
+  const handleNavigateHome = useCallback(() => {
+    setCurrentView('home');
+    syncBrowserUrl('home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const handleSelectTool = useCallback((id: ToolId) => {
     setActiveTool(id);
     setCurrentView(id);
+    syncBrowserUrl(id, id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
-  const handleNavigateBlog = () => {
+  const handleNavigateBlog = useCallback(() => {
     setCurrentView('blog-hub');
+    syncBrowserUrl('blog-hub');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
-  const handleNavigateToolsDirectory = () => {
+  const handleNavigateToolsDirectory = useCallback(() => {
     setCurrentView('all-tools');
+    syncBrowserUrl('all-tools');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
-  const handleSelectBlogPost = (id: number) => {
+  const handleSelectBlogPost = useCallback((id: number) => {
     setSelectedBlogPostId(id);
     setCurrentView('blog-post');
+    syncBrowserUrl('blog-post', undefined, id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
+
+  const handleNavigatePage = useCallback((page: PageView) => {
+    setCurrentView(page);
+    syncBrowserUrl(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   const renderActiveToolComponent = () => {
     switch (activeTool) {
@@ -139,6 +145,7 @@ export default function App() {
         onNavigateBlog={handleNavigateBlog}
         onNavigateToolsDirectory={handleNavigateToolsDirectory}
         onSelectBlogPost={handleSelectBlogPost}
+        onNavigatePage={handleNavigatePage}
       />
 
       {/* Main Routing Container */}
@@ -164,6 +171,12 @@ export default function App() {
           />
         ) : currentView === 'all-tools' ? (
           <ToolsDirectory onSelectTool={handleSelectTool} />
+        ) : currentView === 'privacy-policy' || currentView === 'terms-of-service' || currentView === 'about-us' || currentView === 'contact-us' || currentView === 'disclaimer' ? (
+          <LegalPages
+            pageType={currentView}
+            onNavigateHome={handleNavigateHome}
+            onNavigatePage={handleNavigatePage}
+          />
         ) : (
           /* Dedicated Standalone Tool Page */
           <ToolPageWrapper
@@ -185,6 +198,7 @@ export default function App() {
         onNavigateBlog={handleNavigateBlog}
         onNavigateToolsDirectory={handleNavigateToolsDirectory}
         onSelectBlogPost={handleSelectBlogPost}
+        onNavigatePage={handleNavigatePage}
       />
     </div>
   );

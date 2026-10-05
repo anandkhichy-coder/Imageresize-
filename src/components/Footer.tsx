@@ -1,6 +1,6 @@
 import React from 'react';
 import { Minimize2, ShieldCheck, Heart, Sparkles, BookOpen, ArrowRight } from 'lucide-react';
-import { ToolId } from '../types';
+import { ToolId, PageView } from '../types';
 import { TOOLS_LIST } from '../data/toolsData';
 
 interface FooterProps {
@@ -8,6 +8,7 @@ interface FooterProps {
   onNavigateBlog?: () => void;
   onNavigateToolsDirectory?: () => void;
   onSelectBlogPost?: (id: number) => void;
+  onNavigatePage?: (page: PageView) => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ 
@@ -15,11 +16,12 @@ export const Footer: React.FC<FooterProps> = ({
   onNavigateBlog,
   onNavigateToolsDirectory,
   onSelectBlogPost,
+  onNavigatePage,
 }) => {
   return (
     <footer className="bg-slate-900 text-slate-400 mt-20 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           
           {/* Brand Col */}
           <div className="space-y-3 md:col-span-1">
@@ -206,6 +208,80 @@ export const Footer: React.FC<FooterProps> = ({
             </ul>
           </div>
 
+          {/* Legal & Trust Policies (AdSense Mandatory) */}
+          <div>
+            <h4 className="text-white text-xs font-bold uppercase tracking-wider mb-3">
+              Trust & Policies
+            </h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <button
+                  onClick={() => {
+                    if (onNavigatePage) onNavigatePage('about-us');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-white transition-colors text-left"
+                >
+                  About Us & Mission
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
+                    if (onNavigatePage) onNavigatePage('privacy-policy');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-white transition-colors text-left text-emerald-400 font-medium"
+                >
+                  Privacy Policy (Cookies & Ads)
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
+                    if (onNavigatePage) onNavigatePage('terms-of-service');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-white transition-colors text-left"
+                >
+                  Terms of Service
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
+                    if (onNavigatePage) onNavigatePage('disclaimer');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-white transition-colors text-left"
+                >
+                  Disclaimer & Trademarks
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
+                    if (onNavigatePage) onNavigatePage('contact-us');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-white transition-colors text-left"
+                >
+                  Contact Us & Support
+                </button>
+              </li>
+              <li>
+                <a
+                  href="/ads.txt"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-500 hover:text-slate-300 transition-colors text-[11px] block mt-1"
+                >
+                  ads.txt
+                </a>
+              </li>
+            </ul>
+          </div>
+
           {/* SEO Keywords Cloud */}
           <div>
             <h4 className="text-white text-xs font-bold uppercase tracking-wider mb-3">
@@ -240,12 +316,40 @@ export const Footer: React.FC<FooterProps> = ({
 
         </div>
 
-        {/* Bottom copyright */}
+        {/* Bottom copyright & quick compliance links */}
         <div className="mt-12 pt-6 border-t border-slate-800 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© 2026 imageresize.store — All Rights Reserved. Built for Speed, Privacy & Precision.</p>
-          <p className="flex items-center gap-1">
-            Free Web Utility <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-          </p>
+          <div className="flex items-center gap-4 text-xs">
+            <button
+              onClick={() => {
+                if (onNavigatePage) onNavigatePage('privacy-policy');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hover:text-slate-300 transition-colors"
+            >
+              Privacy Policy
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => {
+                if (onNavigatePage) onNavigatePage('terms-of-service');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hover:text-slate-300 transition-colors"
+            >
+              Terms
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => {
+                if (onNavigatePage) onNavigatePage('contact-us');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hover:text-slate-300 transition-colors"
+            >
+              Contact
+            </button>
+          </div>
         </div>
       </div>
     </footer>

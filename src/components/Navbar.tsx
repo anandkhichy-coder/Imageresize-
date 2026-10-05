@@ -36,6 +36,7 @@ interface NavbarProps {
   onNavigateBlog: (category?: BlogCategory) => void;
   onNavigateToolsDirectory: () => void;
   onSelectBlogPost: (id: number) => void;
+  onNavigatePage?: (page: PageView) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -46,6 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigateBlog,
   onNavigateToolsDirectory,
   onSelectBlogPost,
+  onNavigatePage,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [toolsDropdownOpen, setToolsDropdownOpen] = useState(false);
@@ -510,11 +512,31 @@ export const Navbar: React.FC<NavbarProps> = ({
               Passport 35x45
             </button>
 
+            {/* About Us Link */}
+            <button
+              onClick={() => {
+                if (onNavigatePage) onNavigatePage('about-us');
+              }}
+              className={`px-3 py-2 text-xs font-bold rounded-xl border transition-all ${
+                currentView === 'about-us'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                  : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+              }`}
+            >
+              About
+            </button>
+
             {/* Privacy Badge */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] font-semibold">
+            <button
+              onClick={() => {
+                if (onNavigatePage) onNavigatePage('privacy-policy');
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl text-[11px] font-semibold transition-colors"
+              title="Click to view full Privacy Policy"
+            >
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
               <span className="hidden xl:inline">Client-Side Privacy</span>
-            </div>
+            </button>
           </nav>
 
           {/* Mobile menu button */}
@@ -645,6 +667,51 @@ export const Navbar: React.FC<NavbarProps> = ({
                   )}
                 </button>
               ))}
+            </div>
+
+            {/* Mobile Trust & Legal Section */}
+            <div className="pt-3 border-t border-slate-200">
+              <div className="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase">
+                Trust & Compliance
+              </div>
+              <div className="grid grid-cols-2 gap-2 p-1 text-xs">
+                <button
+                  onClick={() => {
+                    if (onNavigatePage) onNavigatePage('about-us');
+                    setMenuOpen(false);
+                  }}
+                  className="p-2 rounded-lg bg-slate-100 text-slate-700 font-medium text-left"
+                >
+                  About Us
+                </button>
+                <button
+                  onClick={() => {
+                    if (onNavigatePage) onNavigatePage('privacy-policy');
+                    setMenuOpen(false);
+                  }}
+                  className="p-2 rounded-lg bg-emerald-50 text-emerald-800 font-medium text-left border border-emerald-200"
+                >
+                  Privacy Policy
+                </button>
+                <button
+                  onClick={() => {
+                    if (onNavigatePage) onNavigatePage('terms-of-service');
+                    setMenuOpen(false);
+                  }}
+                  className="p-2 rounded-lg bg-slate-100 text-slate-700 font-medium text-left"
+                >
+                  Terms
+                </button>
+                <button
+                  onClick={() => {
+                    if (onNavigatePage) onNavigatePage('contact-us');
+                    setMenuOpen(false);
+                  }}
+                  className="p-2 rounded-lg bg-slate-100 text-slate-700 font-medium text-left"
+                >
+                  Contact Us
+                </button>
+              </div>
             </div>
           </div>
         )}

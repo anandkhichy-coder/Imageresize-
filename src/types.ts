@@ -12,7 +12,17 @@ export type ToolId =
   | 'heic-to-jpg'
   | 'bulk-compress';
 
-export type PageView = ToolId | 'home' | 'blog-hub' | 'blog-post' | 'all-tools';
+export type PageView =
+  | ToolId
+  | 'home'
+  | 'blog-hub'
+  | 'blog-post'
+  | 'all-tools'
+  | 'privacy-policy'
+  | 'terms-of-service'
+  | 'about-us'
+  | 'contact-us'
+  | 'disclaimer';
 
 export type BlogCategory =
   | 'compress'
